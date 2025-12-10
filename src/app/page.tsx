@@ -9,6 +9,9 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { Select, SelectItem } from "@/components/ui/select";
 import { SelectContent, SelectGroup, SelectTrigger, SelectValue } from "@radix-ui/react-select";
 import analyzeSpotify from "./actions/spotify";
+import { Input } from "@/components/ui/input";
+import analyzeAnime from "./actions/anime";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export enum Tone {
   summarise = "summarise",
@@ -16,9 +19,16 @@ export enum Tone {
   roast = "roast"
 }
 
+export enum Mode {
+  spotify = "spotify",
+  anime = "anime"
+}
+
 export default function Home() {
   const [text, setText] = useState("");
   const [tone, setTone] = useState<null | Tone>(null);
+  const [mode, setMode] = useState<Mode>(Mode.spotify);
+  const [username, setUsername] = useState("");
   const { data: session } = useSession();
 
   return (
@@ -39,47 +49,71 @@ export default function Home() {
         Submit
       </Button>
 
-      {session ? (
-        <div>
-          Welcome user
-          <Button onClick={() => signOut()}>Sign out</Button>
-          <div className="m-4">
-            <Select onValueChange={(value) => setTone(value as Tone)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a tone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="summarise">Summarise</SelectItem>
-                  <SelectItem value="criticism">Constructive Criticism</SelectItem>
-                  <SelectItem value="roast">Roast</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            
-            <Button 
-              disabled={!tone}
-              onClick={async () => {
-                if (!session || !session.accessToken) {
-                  toast.error("Please login first");
-                  return ;
-                }
+      <ToggleGroup type="single" onValueChange={value => setMode(value as Mode)} defaultValue={Mode.spotify}>
+        <ToggleGroupItem value={Mode.spotify}>Spotify</ToggleGroupItem>
+        <ToggleGroupItem value={Mode.anime}>Anime</ToggleGroupItem>
+      </ToggleGroup>
+      
+      <Select onValueChange={(value) => setTone(value as Tone)}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select a tone" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value="summarise">Summarise</SelectItem>
+            <SelectItem value="criticism">Constructive Criticism</SelectItem>
+            <SelectItem value="roast">Roast</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
 
-                try {
-                    const res = await analyzeSpotify({ accessToken: session.accessToken, tone: tone! });
-                    toast.success(res);
-                } catch (error) {
-                    toast.error("Error generating response");
-                }
-              }}
-            >Judge my musix</Button>
+      {mode === Mode.spotify ? (
+        session ? (
+          <div>
+            Welcome user
+            <Button onClick={() => signOut()}>Sign out</Button>
+            <div className="m-4">
+              <Button 
+                disabled={!tone}
+                onClick={async () => {
+                  if (!session || !session.accessToken) {
+                    toast.error("Please login first");
+                    return ;
+                  }
+
+                  try {
+                      const res = await analyzeSpotify({ accessToken: session.accessToken, tone: tone! });
+                      toast.success(res);
+                  } catch (error) {
+                      toast.error("Error generating response");
+                  }
+                }}
+              >Critique my musix</Button>
+            </div>
           </div>
+        ) : (
+          <Button onClick={() => signIn("spotify")}>
+            Login with Spotify
+          </Button>
+        )
+      ) : mode === Mode.anime ? (
+        <div>
+          <Input onChange={(e) => setUsername(e.target.value)} placeholder="Enter your MAL username" />
+          <Button
+            disabled={!username}
+            onClick={async () => {
+              try {
+                const res = await analyzeAnime({ username, tone: tone! });
+                toast.success(res);
+              } catch(error) {
+                toast.error("Error generating response");
+              }
+            }}
+          >
+            Critique my anime
+          </Button>
         </div>
-      ) : (
-        <Button onClick={() => signIn("spotify")}>
-          Login with Spotify
-        </Button>
-      )}
+      ) : null}
     </div>
   );
 }
