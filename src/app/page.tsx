@@ -14,6 +14,8 @@ import analyzeSpotify from "./actions/spotify";
 import analyzeAnime from "./actions/anime";
 import analyzeGithub from "./actions/github";
 import analyzeLetterboxd from "./actions/letterboxd";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
+import { Spotlight } from "@/components/ui/spotlight-new";
 
 export enum Tone {
   summarise = "summarise",
@@ -29,31 +31,18 @@ export enum Mode {
 }
 
 export default function Home() {
-  const [text, setText] = useState("");
   const [tone, setTone] = useState<null | Tone>(null);
   const [mode, setMode] = useState<Mode>(Mode.spotify);
   const [username, setUsername] = useState("");
   const { data: session } = useSession();
 
   return (
-    <div className="flex flex-col gap-4 min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <h1 className="text-4xl">Critique.</h1>
+    <div className="flex flex-col gap-4 h-screen w-full items-center justify-center bg-zinc-50 font-sans dark:bg-black dark:text-white">
+      <Spotlight width={100} />
+      <h1 className="text-6xl">Critique.</h1>
+      <AnimatedThemeToggler />
 
-      <Textarea className="w-1/2" value={text} onChange={(e) => setText(e.target.value)}></Textarea>
-      <Button
-        onClick={async () => {
-          try {
-            const response = await testConnection(text, "roast");
-            toast.success(response as string);
-          } catch (error) {
-            toast.error("Error generating response");
-          }
-        }}
-      >
-        Submit
-      </Button>
-
-      <ToggleGroup type="single" onValueChange={value => setMode(value as Mode)} defaultValue={Mode.spotify}>
+      <ToggleGroup type="single" variant="outline" onValueChange={value => setMode(value as Mode)} defaultValue={Mode.spotify}>
         {Object.values(Mode).map((mode) => {
           return <ToggleGroupItem key={mode} value={mode}>{mode.charAt(0).toUpperCase() + mode.slice(1)}</ToggleGroupItem>
         })}
@@ -71,11 +60,11 @@ export default function Home() {
           </SelectGroup>
         </SelectContent>
       </Select>
-
+      
+      <div className="flex flex-col w-full justify-center items-center">
       {mode === Mode.spotify ? (
         session ? (
-          <div>
-            Welcome user
+          <>
             <Button onClick={() => signOut()}>Sign out</Button>
             <div className="m-4">
               <Button 
@@ -95,15 +84,15 @@ export default function Home() {
                 }}
               >Critique my musix</Button>
             </div>
-          </div>
+          </>
         ) : (
           <Button onClick={() => signIn("spotify")}>
             Login with Spotify
           </Button>
         )
       ) : mode === Mode.anime ? (
-        <div>
-          <Input onChange={(e) => setUsername(e.target.value)} placeholder="Enter your MAL username" />
+        <>
+          <Input className="w-[250px]" onChange={(e) => setUsername(e.target.value)} placeholder="Enter your MAL username" />
           <Button
             disabled={!username || !tone}
             onClick={async () => {
@@ -117,10 +106,10 @@ export default function Home() {
           >
             Critique my anime
           </Button>
-        </div>
+        </>
       ) : mode === Mode.github ? (
-        <div>
-          <Input onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Github username" />
+        <>
+          <Input className="w-[250px]" onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Github username" />
           <Button
             disabled={!username || !tone}
             onClick={async () => {
@@ -134,10 +123,10 @@ export default function Home() {
           >
             Critique my Github
           </Button>
-        </div>
+        </>
       ) : mode === Mode.letterboxd ? (
-        <div>
-          <Input onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Letterboxd username" />
+        <>
+          <Input className="w-[250px]" onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Letterboxd username" />
           <Button
             disabled={!username || !tone}
             onClick={async () => {
@@ -149,8 +138,9 @@ export default function Home() {
               }
             }}
           >Critique my movies</Button>
-        </div>
+        </>
       ) : null}
+      </div>
     </div>
   );
 }

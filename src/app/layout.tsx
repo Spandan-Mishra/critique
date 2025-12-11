@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Bitcount_Grid_Single } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
@@ -13,6 +13,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const sensation = Bitcount_Grid_Single({
+  variable: "--font-sensation",
+  weight: ["400", "700", "900"],
+  subsets: ["latin"],
+})
 
 export const metadata: Metadata = {
   title: "Create Next App",
