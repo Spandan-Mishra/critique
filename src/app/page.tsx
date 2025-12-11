@@ -8,22 +8,24 @@ import { Button } from "@/components/ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Select, SelectItem } from "@/components/ui/select";
 import { SelectContent, SelectGroup, SelectTrigger, SelectValue } from "@radix-ui/react-select";
-import analyzeSpotify from "./actions/spotify";
 import { Input } from "@/components/ui/input";
-import analyzeAnime from "./actions/anime";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import analyzeSpotify from "./actions/spotify";
+import analyzeAnime from "./actions/anime";
 import analyzeGithub from "./actions/github";
+import analyzeLetterboxd from "./actions/letterboxd";
 
 export enum Tone {
   summarise = "summarise",
-  criticism = "criticism",
+  criticism = "constructive_criticism",
   roast = "roast"
 }
 
 export enum Mode {
   spotify = "spotify",
   anime = "anime",
-  github = "github"
+  github = "github",
+  letterboxd = "letterboxd"
 }
 
 export default function Home() {
@@ -63,9 +65,9 @@ export default function Home() {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="summarise">Summarise</SelectItem>
-            <SelectItem value="criticism">Constructive Criticism</SelectItem>
-            <SelectItem value="roast">Roast</SelectItem>
+            {Object.values(Tone).map((tone) => {
+              return <SelectItem key={tone} value={tone}>{tone.replace("_", " ").charAt(0).toUpperCase() + tone.replace("_", " ").slice(1)}</SelectItem>
+            })}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -132,6 +134,21 @@ export default function Home() {
           >
             Critique my Github
           </Button>
+        </div>
+      ) : mode === Mode.letterboxd ? (
+        <div>
+          <Input onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Letterboxd username" />
+          <Button
+            disabled={!username || !tone}
+            onClick={async () => {
+              try {
+                const res = await analyzeLetterboxd({ username, tone: tone! });
+                toast.success(res);
+              } catch(error) {
+                toast.error("Error generating response");
+              }
+            }}
+          >Critique my movies</Button>
         </div>
       ) : null}
     </div>

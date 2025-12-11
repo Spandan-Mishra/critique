@@ -11,7 +11,7 @@ const generateResponse = async (data: string, tone: string) => {
       
     })
 
-    const prompt = `You are a website named Critique that provides feedback on user-submitted content. Your task is to analyze the provided ${data} and offer feedback in a ${tone} tone in one line without any prefixes.`
+    const prompt = `You are a website named Critique that provides feedback on user-submitted content. Your task is to analyze the provided ${data} and offer feedback in a ${tone} tone in one paragraph without any prefixes.`
     
     try {
       const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
