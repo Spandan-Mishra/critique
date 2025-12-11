@@ -12,6 +12,7 @@ import analyzeSpotify from "./actions/spotify";
 import { Input } from "@/components/ui/input";
 import analyzeAnime from "./actions/anime";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import analyzeGithub from "./actions/github";
 
 export enum Tone {
   summarise = "summarise",
@@ -21,7 +22,8 @@ export enum Tone {
 
 export enum Mode {
   spotify = "spotify",
-  anime = "anime"
+  anime = "anime",
+  github = "github"
 }
 
 export default function Home() {
@@ -50,8 +52,9 @@ export default function Home() {
       </Button>
 
       <ToggleGroup type="single" onValueChange={value => setMode(value as Mode)} defaultValue={Mode.spotify}>
-        <ToggleGroupItem value={Mode.spotify}>Spotify</ToggleGroupItem>
-        <ToggleGroupItem value={Mode.anime}>Anime</ToggleGroupItem>
+        {Object.values(Mode).map((mode) => {
+          return <ToggleGroupItem key={mode} value={mode}>{mode.charAt(0).toUpperCase() + mode.slice(1)}</ToggleGroupItem>
+        })}
       </ToggleGroup>
       
       <Select onValueChange={(value) => setTone(value as Tone)}>
@@ -100,7 +103,7 @@ export default function Home() {
         <div>
           <Input onChange={(e) => setUsername(e.target.value)} placeholder="Enter your MAL username" />
           <Button
-            disabled={!username}
+            disabled={!username || !tone}
             onClick={async () => {
               try {
                 const res = await analyzeAnime({ username, tone: tone! });
@@ -111,6 +114,23 @@ export default function Home() {
             }}
           >
             Critique my anime
+          </Button>
+        </div>
+      ) : mode === Mode.github ? (
+        <div>
+          <Input onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Github username" />
+          <Button
+            disabled={!username || !tone}
+            onClick={async () => {
+              try {
+                const res = await analyzeGithub({ username, tone: tone! });
+                toast.success(res);
+              } catch(error) {
+                toast.error("Error generating response");
+              }
+            }}
+          >
+            Critique my Github
           </Button>
         </div>
       ) : null}

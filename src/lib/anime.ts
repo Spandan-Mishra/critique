@@ -8,7 +8,6 @@ export async function getTopAnime({ username }: { username: string }) {
             }
         })
         const data = await res.json()
-        console.log("Data from lib:", data.data);
         return data.data;
     } catch(error) {
         console.error("Error fetching data from MAL:", error);
