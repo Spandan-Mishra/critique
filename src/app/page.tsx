@@ -13,8 +13,9 @@ import analyzeAnime from "./actions/anime";
 import analyzeGithub from "./actions/github";
 import analyzeLetterboxd from "./actions/letterboxd";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
-import { Spotlight } from "@/components/ui/spotlight-new";
 import { motion, AnimatePresence, Variants } from "framer-motion";
+import FireBackground from "@/components/fire-background";
+import { Spinner } from "@/components/ui/spinner";
 
 export enum Tone {
   summarise = "summarise",
@@ -75,14 +76,35 @@ export default function Home() {
       initial="hidden"
       animate="visible"
       className="flex flex-col gap-4 h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950 font-sans dark:text-white"
-    > 
+    >
+
+      <motion.div variants={itemVariants} className="absolute bottom-5 right-8">
+          <AnimatedThemeToggler className="shadow-xl/30 dark:shadow-white/30 rounded-full p-2" />
+        </motion.div>
+
+      <AnimatePresence>
+        {tone === Tone.roast && (
+          <motion.div
+            key="fire-bg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 z-0 pointer-events-none"
+          >
+            <FireBackground />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="relative z-10 flex flex-col items-center gap-6 w-full">
         <motion.h1 variants={itemVariants} className="text-9xl font-hero">
           Critique.
         </motion.h1>
-        <motion.div variants={itemVariants}>
-          <AnimatedThemeToggler />
-        </motion.div>
+
+        <motion.h2 variants={itemVariants} className="test-2xl text-muted-foreground">
+          Get judged based on your media interests
+        </motion.h2>
 
         <motion.div variants={itemVariants}>
           <ToggleGroup value={mode} type="single" variant="outline" onValueChange={value => value && setMode(value as Mode)} defaultValue={Mode.spotify}>
@@ -108,7 +130,7 @@ export default function Home() {
           </Select>
         </motion.div>
         
-        <div className="h-30 w-full flex justify-center items-start mt-4">
+        <div className="h-30 w-full flex justify-center items-start">
           <AnimatePresence mode="wait">
             <motion.div
               key={mode}
@@ -142,7 +164,12 @@ export default function Home() {
                           }
                         }}
                       >
-                        {isLoading ? "Critiquing..." : "Critique my music"}
+                        {isLoading ? (
+                          <>
+                            <Spinner />
+                            Critiquing...
+                          </>
+                          ) : "Critique my music"}
                       </Button>
                     </div>
                   </>
@@ -163,7 +190,7 @@ export default function Home() {
                 )
               ) : mode === Mode.anime ? (
                 <>
-                  <Input className="w-62.5" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your MAL username" />
+                  <Input className="w-56" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your MAL username" />
                   <Button
                     disabled={!username || !tone || isLoading}
                     onClick={async () => {
@@ -178,7 +205,12 @@ export default function Home() {
                       }
                     }}
                   >
-                    {isLoading ? "Critiquing..." : "Critique my anime"}
+                    {isLoading ? (
+                      <>
+                        <Spinner />
+                        Critiquing...
+                      </>
+                      ) : "Critique my anime"}
                   </Button>
                 </>
               ) : mode === Mode.github ? (
@@ -198,12 +230,17 @@ export default function Home() {
                       }
                     }}
                   >
-                    {isLoading ? "Critiquing..." : "Critique my code"}
+                    {isLoading ? (
+                      <>
+                        <Spinner />
+                        Critiquing...
+                      </>
+                      ) : "Critique my code"}
                   </Button>
                 </>
               ) : mode === Mode.letterboxd ? (
                 <>
-                  <Input className="w-62.5" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Letterboxd username" />
+                  <Input className="w-71" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Letterboxd username" />
                   <Button
                     disabled={!username || !tone}
                     onClick={async () => {
@@ -218,7 +255,12 @@ export default function Home() {
                       }
                     }}
                   >
-                    {isLoading ? "Critiquing..." : "Critique my movies"}
+                    {isLoading ? (
+                      <>
+                        <Spinner />
+                        Critiquing...
+                      </>
+                      ) : "Critique my movies"}
                   </Button>
                 </>
               ) : null}
