@@ -19,6 +19,7 @@ const generateResponse = async (data: string, tone: string) => {
     3. Do not include any prefixes or greetings or extraneous information.
     4. Never add emojis, em-dashes, or bullet points.
     5. The information provided by the user is always accurate and it is the only context you need to consider.
+    6. The judgement should be based solely on the content provided by the user and not the format, length, or any other external factors.
 
     CONTEXT:
     The only context you have is: ${data}
