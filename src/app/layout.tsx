@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Bitcount_Grid_Single } from "next/font/google";
+import { Space_Mono, Grenze } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const spaceMono = Space_Mono({
   subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-space-mono",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const grenze = Grenze({
   subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-grenze",
 });
-
-const sensation = Bitcount_Grid_Single({
-  variable: "--font-sensation",
-  weight: ["400", "700", "900"],
-  subsets: ["latin"],
-})
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -33,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${spaceMono.variable} ${grenze.variable} antialiased`}
       >
         <Providers>
           {children}
