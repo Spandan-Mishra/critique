@@ -16,6 +16,7 @@ import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import FireBackground from "@/components/fire-background";
 import { Spinner } from "@/components/ui/spinner";
+import CritiqueModal from "@/components/critique-modal";
 
 export enum Tone {
   summarise = "summarise",
@@ -62,13 +63,19 @@ export default function Home() {
   const [mode, setMode] = useState<Mode>(Mode.spotify);
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [critiqueResult, setCritiqueResult] = useState("");
+  const [showDialog, setShowDialog] = useState(false);
   const { data: session } = useSession();
 
   useEffect(() => {
     setUsername("");
   }, [mode]);
 
-  console.log("Username:", username);
+  const handleSuccess = (text: string) => {
+    setCritiqueResult(text);
+    setShowDialog(true);
+    setIsLoading(false);
+  };
 
   return (
     <motion.div 
@@ -96,6 +103,12 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <CritiqueModal
+        isOpen={showDialog} 
+        onClose={() => setShowDialog(false)} 
+        critique={critiqueResult} 
+      />
 
       <div className="relative z-10 flex flex-col items-center gap-6 w-full">
         <motion.h1 variants={itemVariants} className="text-9xl font-hero">
@@ -156,7 +169,7 @@ export default function Home() {
                           try {
                               setIsLoading(true);
                               const res = await analyzeSpotify({ accessToken: session.accessToken, tone: tone! });
-                              toast.success(res);
+                              handleSuccess(res);
                           } catch (error) {
                               toast.error("Error generating response");
                           } finally {
@@ -197,7 +210,7 @@ export default function Home() {
                       try {
                         setIsLoading(true);
                         const res = await analyzeAnime({ username, tone: tone! });
-                        toast.success(res);
+                        handleSuccess(res);
                       } catch(error) {
                         toast.error("Error generating response");
                       } finally {
@@ -222,7 +235,7 @@ export default function Home() {
                       try {
                         setIsLoading(true);
                         const res = await analyzeGithub({ username, tone: tone! });
-                        toast.success(res);
+                        handleSuccess(res);
                       } catch(error) {
                         toast.error("Error generating response");
                       } finally {
@@ -235,7 +248,7 @@ export default function Home() {
                         <Spinner />
                         Critiquing...
                       </>
-                      ) : "Critique my code"}
+                      ) : "Critique my Github"}
                   </Button>
                 </>
               ) : mode === Mode.letterboxd ? (
@@ -247,7 +260,7 @@ export default function Home() {
                       try {
                         setIsLoading(true);
                         const res = await analyzeLetterboxd({ username, tone: tone! });
-                        toast.success(res);
+                        handleSuccess(res);
                       } catch(error) {
                         toast.error("Error generating response");
                       } finally {
