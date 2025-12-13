@@ -5,7 +5,8 @@ export async function getTopAnime({ username }: { username: string }) {
         const res = await fetch(`https://api.myanimelist.net/v2/users/${username}/animelist?status=completed&sort=list_score&limit=20`, {
             headers: {
                 "X-MAL-CLIENT-ID": process.env.MAL_CLIENT_ID!
-            }
+            },
+            cache: "no-store"
         })
         const data = await res.json()
         return data.data;

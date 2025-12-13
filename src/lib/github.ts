@@ -6,7 +6,8 @@ export async function getUserGithubProfile({ username }: { username: string }) {
             const profile = await fetch(`https://api.github.com/users/${username}`, {
                 headers: {
                     Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
-                }
+                },
+                cache: "no-store"
             })
             return profile.json()
         },
@@ -14,7 +15,8 @@ export async function getUserGithubProfile({ username }: { username: string }) {
             const repos = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=15`, {
                 headers: {
                     Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
-                }
+                },
+                cache: "no-store"
             })
             return repos.json()
         }
