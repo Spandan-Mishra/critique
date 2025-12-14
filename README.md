@@ -4,7 +4,10 @@
 
 The website that judges you based on your media interests. Choose your social media platform, select a tone (roast if you're up to it), and let Critique give you a complete review of your activities on the platform. The users can get critiques on their Spotify, MyAnimeList, Github, and Letterboxd profiles with other platform integrations on the way!
 
-<img width="100%" alt="Demo Video" src="https://github.com/user-attachments/assets/a82c6ece-af8a-416b-952b-df62f409a38b">
+<p align="center" width="100%">
+    <video width="90%" alt="Demo Video" src="https://github.com/user-attachments/assets/a82c6ece-af8a-416b-952b-df62f409a38b" controls />
+</p>
+
 
 ## Technologies Used
 
