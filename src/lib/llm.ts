@@ -1,15 +1,10 @@
-import { OpenRouter } from '@openrouter/sdk';
+"use server";
 
 const generateResponse = async (data: string, tone: string) => {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
       throw new Error("OPENROUTER_API_KEY is not set in environment variables.");
     }
-
-    const model = new OpenRouter({
-      apiKey: apiKey,
-      
-    })
 
     const prompt = `You are a website named Critique that provides feedback on user-submitted content. You must strictly adhere to these instructions:
     

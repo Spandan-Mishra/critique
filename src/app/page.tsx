@@ -17,6 +17,7 @@ import { motion, AnimatePresence, Variants } from "framer-motion";
 import FireBackground from "@/components/fire-background";
 import { Spinner } from "@/components/ui/spinner";
 import CritiqueModal from "@/components/critique-modal";
+import { analyzeChess } from "./actions/chess";
 
 export enum Tone {
   summarise = "summarise",
@@ -28,7 +29,8 @@ export enum Mode {
   spotify = "spotify",
   anime = "anime",
   github = "github",
-  letterboxd = "letterboxd"
+  letterboxd = "letterboxd",
+  chess = "chess",
 }
 
 const containerVariants: Variants = {
@@ -276,7 +278,32 @@ export default function Home() {
                       ) : "Critique my movies"}
                   </Button>
                 </>
-              ) : null}
+              ) : mode === Mode.chess ? (
+                <>
+                  <Input className="w-70" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Chess.com username" />
+                  <Button
+                    disabled={!username || !tone || isLoading}
+                    onClick={async () => {
+                      try {
+                        setIsLoading(true);
+                        const res = await analyzeChess({ username, tone: tone! });
+                        handleSuccess(res);
+                      } catch(error) {
+                        toast.error("Error generating response", error instanceof Error ? { description: error.message } : undefined);
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Spinner />
+                        Critiquing...
+                      </>
+                      ) : "Critique my chess"}
+                  </Button>
+                </>
+              ): null}
             </motion.div>
           </AnimatePresence>
         </div>
