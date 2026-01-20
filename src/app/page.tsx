@@ -258,6 +258,7 @@ export default function Home() {
                     </motion.div>
                   ) : (
                     <motion.div
+                      className="flex flex-col gap-4"
                       variants={itemVariants}
                       initial="hidden"
                       animate="visible"
@@ -307,6 +308,7 @@ export default function Home() {
                     </motion.div>
                   ) : (
                     <motion.div
+                      className="flex flex-col gap-4"
                       variants={itemVariants}
                       initial="hidden"
                       animate="visible"
@@ -357,6 +359,7 @@ export default function Home() {
                   </motion.div>
                 ) : (
                   <motion.div
+                    className="flex flex-col gap-4"
                     variants={itemVariants}
                     initial="hidden"
                     animate="visible"
@@ -407,6 +410,7 @@ export default function Home() {
                   </motion.div>
                 ) : (
                   <motion.div
+                    className="flex flex-col gap-4"
                     variants={itemVariants}
                     initial="hidden"
                     animate="visible"
