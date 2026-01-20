@@ -18,6 +18,7 @@ import FireBackground from "@/components/fire-background";
 import { Spinner } from "@/components/ui/spinner";
 import CritiqueModal from "@/components/critique-modal";
 import { analyzeChess } from "./actions/chess";
+import SingleInput from "@/components/single-input";
 
 export enum Tone {
   summarise = "summarise",
@@ -62,6 +63,7 @@ const itemVariants: Variants = {
 
 export default function Home() {
   const [tone, setTone] = useState<null | Tone>(null);
+  const [versus, setVersus] = useState<boolean>(false);
   const [mode, setMode] = useState<Mode>(Mode.spotify);
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -88,8 +90,14 @@ export default function Home() {
     >
 
       <motion.div variants={itemVariants} className="absolute bottom-5 right-8">
-          <AnimatedThemeToggler className="shadow-xl/30 dark:shadow-white/30 rounded-full p-2" />
-        </motion.div>
+        <AnimatedThemeToggler className="shadow-xl/30 dark:shadow-white/30 rounded-full p-2" />
+      </motion.div>
+
+      <motion.div variants={itemVariants} className="absolute top-5 right-8">
+        <Button onClick={() => setVersus(!versus)} className={`${versus ? "bg-slate-700 text-white hover:bg-slate-800" : ""}`}>
+          {versus ? "Versus" : "Single"} Mode
+        </Button>
+      </motion.div>
 
       <AnimatePresence>
         {tone === Tone.roast && (
@@ -161,7 +169,7 @@ export default function Home() {
                     <Button className="-mb-4" onClick={() => signOut()}>Sign out</Button>
                     <div className="m-4">
                       <Button 
-                        disabled={!tone || isLoading}
+                        disabled={!tone || isLoading || versus}
                         onClick={async () => {
                           if (!session || !session.accessToken) {
                             toast.error("Please login first");
@@ -184,6 +192,8 @@ export default function Home() {
                             <Spinner />
                             Critiquing...
                           </>
+                          ) : versus ? (
+                            "Versus mode not available for Spotify"
                           ) : "Critique my music"}
                       </Button>
                     </div>
@@ -204,105 +214,68 @@ export default function Home() {
                   </>
                 )
               ) : mode === Mode.anime ? (
-                <>
-                  <Input className="w-56" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your MAL username" />
-                  <Button
-                    disabled={!username || !tone || isLoading}
-                    onClick={async () => {
-                      try {
-                        setIsLoading(true);
-                        const res = await analyzeAnime({ username, tone: tone! });
-                        handleSuccess(res);
-                      } catch(error) {
-                        toast.error("Error generating response");
-                      } finally {
-                        setIsLoading(false);
-                      }
-                    }}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Spinner />
-                        Critiquing...
-                      </>
-                      ) : "Critique my anime"}
-                  </Button>
-                </>
+                <SingleInput 
+                  onChange={setUsername}
+                  value={username}
+                  emptyPlaceholder="Enter your MAL username"
+                  textPlaceholder="Critique my anime"
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                  onSubmit={async ({ value, tone }) => {
+                    const res = await analyzeAnime({ username: value, tone: tone! });
+                    return res;
+                  }}
+                  onSuccess={handleSuccess}
+                  tone={tone!}
+                />
               ) : mode === Mode.github ? (
-                <>
-                  <Input className="w-62.5" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Github username" />
-                  <Button
-                    disabled={!username || !tone || isLoading}
-                    onClick={async () => {
-                      try {
-                        setIsLoading(true);
-                        const res = await analyzeGithub({ username, tone: tone! });
-                        handleSuccess(res);
-                      } catch(error) {
-                        toast.error("Error generating response");
-                      } finally {
-                        setIsLoading(false);
-                      }
-                    }}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Spinner />
-                        Critiquing...
-                      </>
-                      ) : "Critique my Github"}
-                  </Button>
-                </>
+                <SingleInput 
+                  width="w-62.5"
+                  onChange={setUsername}
+                  value={username}
+                  emptyPlaceholder="Enter your GitHub username"
+                  textPlaceholder="Critique my GitHub"
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                  onSubmit={async ({ value, tone }) => {
+                    const res = await analyzeGithub({ username: value, tone: tone! });
+                    return res;
+                  }}
+                  onSuccess={handleSuccess}
+                  tone={tone!}
+                />
               ) : mode === Mode.letterboxd ? (
-                <>
-                  <Input className="w-71" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Letterboxd username" />
-                  <Button
-                    disabled={!username || !tone}
-                    onClick={async () => {
-                      try {
-                        setIsLoading(true);
-                        const res = await analyzeLetterboxd({ username, tone: tone! });
-                        handleSuccess(res);
-                      } catch(error) {
-                        toast.error("Error generating response");
-                      } finally {
-                        setIsLoading(false);
-                      }
-                    }}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Spinner />
-                        Critiquing...
-                      </>
-                      ) : "Critique my movies"}
-                  </Button>
-                </>
+                <SingleInput 
+                  width="w-72.5"
+                  onChange={setUsername}
+                  value={username}
+                  emptyPlaceholder="Enter your Letterboxd username"
+                  textPlaceholder="Critique my movies"
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                  onSubmit={async ({ value, tone }) => {
+                    const res = await analyzeLetterboxd({ username: value, tone: tone! });
+                    return res;
+                  }}
+                  onSuccess={handleSuccess}
+                  tone={tone!}
+                />
               ) : mode === Mode.chess ? (
-                <>
-                  <Input className="w-70" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your Chess.com username" />
-                  <Button
-                    disabled={!username || !tone || isLoading}
-                    onClick={async () => {
-                      try {
-                        setIsLoading(true);
-                        const res = await analyzeChess({ username, tone: tone! });
-                        handleSuccess(res);
-                      } catch(error) {
-                        toast.error("Error generating response", error instanceof Error ? { description: error.message } : undefined);
-                      } finally {
-                        setIsLoading(false);
-                      }
-                    }}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Spinner />
-                        Critiquing...
-                      </>
-                      ) : "Critique my chess"}
-                  </Button>
-                </>
+                <SingleInput 
+                  width="w-70"
+                  onChange={setUsername}
+                  value={username}
+                  emptyPlaceholder="Enter your Chess.com username"
+                  textPlaceholder="Critique my chess"
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                  onSubmit={async ({ value, tone }) => {
+                    const res = await analyzeChess({ username: value, tone: tone! });
+                    return res;
+                  }}
+                  onSuccess={handleSuccess}
+                  tone={tone!}
+                />
               ): null}
             </motion.div>
           </AnimatePresence>
