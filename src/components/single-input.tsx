@@ -15,8 +15,7 @@ const SingleInput = ({
     onSubmit,
     onSuccess,
     tone,
-}
-: {
+} : {
     width?: string;
     onChange: (value: string) => void;
     value: string;

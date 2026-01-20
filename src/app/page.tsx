@@ -19,6 +19,7 @@ import { Spinner } from "@/components/ui/spinner";
 import CritiqueModal from "@/components/critique-modal";
 import { analyzeChess } from "./actions/chess";
 import SingleInput from "@/components/single-input";
+import VersusInput from "@/components/versus-input";
 
 export enum Tone {
   summarise = "summarise",
@@ -35,7 +36,7 @@ export enum Mode {
 }
 
 const containerVariants: Variants = {
-  hidden: { opacity: 0},
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
@@ -66,6 +67,7 @@ export default function Home() {
   const [versus, setVersus] = useState<boolean>(false);
   const [mode, setMode] = useState<Mode>(Mode.spotify);
   const [username, setUsername] = useState("");
+  const [opponentUsername, setOpponentUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [critiqueResult, setCritiqueResult] = useState("");
   const [showDialog, setShowDialog] = useState(false);
@@ -74,6 +76,12 @@ export default function Home() {
   useEffect(() => {
     setUsername("");
   }, [mode]);
+
+  useEffect(() => {
+    if (!versus) {
+      setOpponentUsername("");
+    }
+  }, [versus]);
 
   const handleSuccess = (text: string) => {
     setCritiqueResult(text);
@@ -136,22 +144,31 @@ export default function Home() {
             })}
           </ToggleGroup>
         </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Select onValueChange={(value) => setTone(value as Tone)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a tone" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {Object.values(Tone).map((tone) => {
-                  if (tone === "roast") {}
-                  return <SelectItem key={tone} value={tone}>{tone.replace("_", " ").charAt(0).toUpperCase() + tone.replace("_", " ").slice(1)}</SelectItem>
-                })}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </motion.div>
+        
+        <AnimatePresence>
+            {!versus && (
+              <motion.div 
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                exit={{ opacity: 0, y: -20, filter: "blur(10px)", transition: { duration: 0.4 } }}
+              >
+              <Select onValueChange={(value) => setTone(value as Tone)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a tone" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {Object.values(Tone).map((tone) => {
+                      if (tone === "roast") {}
+                      return <SelectItem key={tone} value={tone}>{tone.replace("_", " ").charAt(0).toUpperCase() + tone.replace("_", " ").slice(1)}</SelectItem>
+                    })}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <div className="h-30 w-full flex justify-center items-start">
           <AnimatePresence mode="wait">
@@ -213,69 +230,205 @@ export default function Home() {
                     </Button>
                   </>
                 )
-              ) : mode === Mode.anime ? (
-                <SingleInput 
-                  onChange={setUsername}
-                  value={username}
-                  emptyPlaceholder="Enter your MAL username"
-                  textPlaceholder="Critique my anime"
-                  isLoading={isLoading}
-                  setIsLoading={setIsLoading}
-                  onSubmit={async ({ value, tone }) => {
-                    const res = await analyzeAnime({ username: value, tone: tone! });
-                    return res;
-                  }}
-                  onSuccess={handleSuccess}
-                  tone={tone!}
-                />
-              ) : mode === Mode.github ? (
-                <SingleInput 
-                  width="w-62.5"
-                  onChange={setUsername}
-                  value={username}
-                  emptyPlaceholder="Enter your GitHub username"
-                  textPlaceholder="Critique my GitHub"
-                  isLoading={isLoading}
-                  setIsLoading={setIsLoading}
-                  onSubmit={async ({ value, tone }) => {
-                    const res = await analyzeGithub({ username: value, tone: tone! });
-                    return res;
-                  }}
-                  onSuccess={handleSuccess}
-                  tone={tone!}
-                />
+                ) : mode === Mode.anime ? (
+                  versus ? (
+                    <motion.div
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
+                    >
+                      <VersusInput
+                        width="w-72.5"
+                        onUser1Change={setUsername}
+                        user1Value={username}
+                        onUser2Change={setOpponentUsername}
+                        user2Value={opponentUsername}
+                        emptyPlaceholder1="Enter first MyAnimeList username"
+                        emptyPlaceholder2="Enter second MyAnimeList username"
+                        textPlaceholder="Critique these anime tastes"
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                        onSubmit={async ({ user1Value, user2Value }) => {
+                          const res = await analyzeAnime({ username1: user1Value, username2: user2Value });
+                          return res;
+                        }}
+                        onSuccess={handleSuccess}
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
+                    >
+                      <SingleInput 
+                        onChange={setUsername}
+                        value={username}
+                        emptyPlaceholder="Enter your MAL username"
+                        textPlaceholder="Critique my anime"
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                        onSubmit={async ({ value, tone }) => {
+                          const res = await analyzeAnime({ username: value, tone: tone! });
+                          return res;
+                        }}
+                        onSuccess={handleSuccess}
+                        tone={tone!}
+                      />
+                    </motion.div>
+                  )
+                ) : mode === Mode.github ? (
+                  versus ? (
+                    <motion.div
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
+                    >
+                      <VersusInput
+                        width="w-70"
+                        onUser1Change={setUsername}
+                        user1Value={username}
+                        onUser2Change={setOpponentUsername}
+                        user2Value={opponentUsername}
+                        emptyPlaceholder1="Enter first GitHub username"
+                        emptyPlaceholder2="Enter second GitHub username"
+                        textPlaceholder="Critique these GitHub profiles"
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                        onSubmit={async ({ user1Value, user2Value }) => {
+                          const res = await analyzeGithub({ username1: user1Value, username2: user2Value });
+                          return res;
+                        }}
+                        onSuccess={handleSuccess}
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
+                    >
+                      <SingleInput 
+                        width="w-70"
+                        onChange={setUsername}
+                        value={username}
+                        emptyPlaceholder="Enter your GitHub username"
+                        textPlaceholder="Critique my GitHub"
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                        onSubmit={async ({ value, tone }) => {
+                          const res = await analyzeGithub({ username: value, tone: tone! });
+                          return res;
+                        }}
+                        onSuccess={handleSuccess}
+                        tone={tone!}
+                      />
+                    </motion.div>
+                  )
               ) : mode === Mode.letterboxd ? (
-                <SingleInput 
-                  width="w-72.5"
-                  onChange={setUsername}
-                  value={username}
-                  emptyPlaceholder="Enter your Letterboxd username"
-                  textPlaceholder="Critique my movies"
-                  isLoading={isLoading}
-                  setIsLoading={setIsLoading}
-                  onSubmit={async ({ value, tone }) => {
-                    const res = await analyzeLetterboxd({ username: value, tone: tone! });
-                    return res;
-                  }}
-                  onSuccess={handleSuccess}
-                  tone={tone!}
-                />
+                versus ? (
+                  <motion.div
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
+                  >
+                    <VersusInput
+                      width="w-70"
+                      onUser1Change={setUsername}
+                      user1Value={username}
+                      onUser2Change={setOpponentUsername}
+                      user2Value={opponentUsername}
+                      emptyPlaceholder1="Enter first Letterboxd username"
+                      emptyPlaceholder2="Enter second Letterboxd username"
+                      textPlaceholder="Critique these movie tastes"
+                      isLoading={isLoading}
+                      setIsLoading={setIsLoading}
+                      onSubmit={async ({ user1Value, user2Value }) => {
+                        const res = await analyzeLetterboxd({ username1: user1Value, username2: user2Value });
+                        return res;
+                      }}
+                      onSuccess={handleSuccess}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
+                  >
+                    <SingleInput 
+                      width="w-70"
+                      onChange={setUsername}
+                      value={username}
+                      emptyPlaceholder="Enter your Letterboxd username"
+                      textPlaceholder="Critique my movies"
+                      isLoading={isLoading}
+                      setIsLoading={setIsLoading}
+                      onSubmit={async ({ value, tone }) => {
+                        const res = await analyzeLetterboxd({ username: value, tone: tone! });
+                        return res;
+                      }}
+                      onSuccess={handleSuccess}
+                      tone={tone!}
+                    />
+                  </motion.div>
+                )
               ) : mode === Mode.chess ? (
-                <SingleInput 
-                  width="w-70"
-                  onChange={setUsername}
-                  value={username}
-                  emptyPlaceholder="Enter your Chess.com username"
-                  textPlaceholder="Critique my chess"
-                  isLoading={isLoading}
-                  setIsLoading={setIsLoading}
-                  onSubmit={async ({ value, tone }) => {
-                    const res = await analyzeChess({ username: value, tone: tone! });
-                    return res;
-                  }}
-                  onSuccess={handleSuccess}
-                  tone={tone!}
-                />
+                versus ? (
+                  <motion.div
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
+                  >
+                    <VersusInput
+                      width="w-70"
+                      onUser1Change={setUsername}
+                      user1Value={username}
+                      onUser2Change={setOpponentUsername}
+                      user2Value={opponentUsername}
+                      emptyPlaceholder1="Enter first Chess.com username"
+                      emptyPlaceholder2="Enter second Chess.com username"
+                      textPlaceholder="Critique these chess profiles"
+                      isLoading={isLoading}
+                      setIsLoading={setIsLoading}
+                      onSubmit={async ({ user1Value, user2Value }) => {
+                        const res = await analyzeChess({ username1: user1Value, username2: user2Value });
+                        return res;
+                      }}
+                      onSuccess={handleSuccess}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
+                  >
+                    <SingleInput 
+                      width="w-70"
+                      onChange={setUsername}
+                      value={username}
+                      emptyPlaceholder="Enter your Chess.com username"
+                      textPlaceholder="Critique my chess"
+                      isLoading={isLoading}
+                      setIsLoading={setIsLoading}
+                      onSubmit={async ({ value, tone }) => {
+                        const res = await analyzeChess({ username: value, tone: tone! });
+                        return res;
+                      }}
+                      onSuccess={handleSuccess}
+                      tone={tone!}
+                    />
+                  </motion.div>
+                )
               ): null}
             </motion.div>
           </AnimatePresence>
