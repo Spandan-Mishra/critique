@@ -239,13 +239,12 @@ export default function Home() {
                       exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
                     >
                       <VersusInput
-                        width="w-72.5"
                         onUser1Change={setUsername}
                         user1Value={username}
                         onUser2Change={setOpponentUsername}
                         user2Value={opponentUsername}
-                        emptyPlaceholder1="Enter first MyAnimeList username"
-                        emptyPlaceholder2="Enter second MyAnimeList username"
+                        emptyPlaceholder1="MAL username 1"
+                        emptyPlaceholder2="MAL username 2"
                         textPlaceholder="Critique these anime tastes"
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
@@ -289,13 +288,12 @@ export default function Home() {
                       exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
                     >
                       <VersusInput
-                        width="w-70"
                         onUser1Change={setUsername}
                         user1Value={username}
                         onUser2Change={setOpponentUsername}
                         user2Value={opponentUsername}
-                        emptyPlaceholder1="Enter first GitHub username"
-                        emptyPlaceholder2="Enter second GitHub username"
+                        emptyPlaceholder1="GitHub username 1"
+                        emptyPlaceholder2="GitHub username 2"
                         textPlaceholder="Critique these GitHub profiles"
                         isLoading={isLoading}
                         setIsLoading={setIsLoading}
@@ -340,13 +338,12 @@ export default function Home() {
                     exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
                   >
                     <VersusInput
-                      width="w-70"
                       onUser1Change={setUsername}
                       user1Value={username}
                       onUser2Change={setOpponentUsername}
                       user2Value={opponentUsername}
-                      emptyPlaceholder1="Enter first Letterboxd username"
-                      emptyPlaceholder2="Enter second Letterboxd username"
+                      emptyPlaceholder1="Letterboxd username 1"
+                      emptyPlaceholder2="Letterboxd username 2"
                       textPlaceholder="Critique these movie tastes"
                       isLoading={isLoading}
                       setIsLoading={setIsLoading}
@@ -391,13 +388,12 @@ export default function Home() {
                     exit={{ opacity: 0, y: -10, filter: "blur(5px)", transition: { duration: 0.2 } }}
                   >
                     <VersusInput
-                      width="w-70"
                       onUser1Change={setUsername}
                       user1Value={username}
                       onUser2Change={setOpponentUsername}
                       user2Value={opponentUsername}
-                      emptyPlaceholder1="Enter first Chess.com username"
-                      emptyPlaceholder2="Enter second Chess.com username"
+                      emptyPlaceholder1="Chess.com username 1"
+                      emptyPlaceholder2="Chess.com username 2"
                       textPlaceholder="Critique these chess profiles"
                       isLoading={isLoading}
                       setIsLoading={setIsLoading}
